@@ -3,15 +3,17 @@ ActiveScaffold rescue
 begin
   gem "thinking-sphinx"
 rescue Gem::LoadError
-  puts "#### Thinking Sphinx gem not installed ####"
+  raise "#### Thinking Sphinx gem not installed ####"
 end
  
 
 
 ActiveScaffold::Config::Search.class_eval do
+	# Add the 'engine' configuration option
   def engine
     unless @engine
       @engine
+      # Default to SQL
       self.engine = 'sql'
     end
     @engine
@@ -30,23 +32,33 @@ ActiveScaffold::Actions::Search.class_eval do
 	
   protected  
 	def do_search
+		# Thinking Sphinx is configured, use it
 		if active_scaffold_config.search.engine == "thinking_sphinx"
 			@query = params[:search].to_s.strip rescue ''
       unless @query.empty?
-				puts "############## Doing Thinking Sphinx Search"	
 				begin
+					# Run the search, returning only the ids
 				  sphinx_results = self.controller_name.classify.constantize.search(@query, :select => :id, :limit => 50)
 				rescue NoMethodError
-					puts "############## Thinking Sphinx not configured on model, falling back"
+					# There is no search method on the model, probably no indexes configured
+					# Fallback to default SQL search
 					do_original_search
 					return
 				end
+				
+				# Create the conditions
 				search_conditions = { :id => sphinx_results.collect { |x| x.id } }
+				
+				# Add the ids to the conditions of the current search
 				self.active_scaffold_conditions = merge_conditions(self.active_scaffold_conditions, search_conditions)
+				
+				# Nil the search parameter so it isn't passed to the original search
+				params[:search] = nil
+				
 				do_original_search
 			end		
 		else
-			puts "############## Doing Original Search"	
+			# Fallback to default SQL search
 			do_original_search
 		end
 	end
