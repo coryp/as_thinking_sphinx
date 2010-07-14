@@ -1,13 +1,34 @@
-AsSearch
+ActiveScaffold Thinking Sphinx Adapter
 ========
 
-Introduction goes here.
+as_thinking_sphinx is a simple adapter to allow the built-in ActiveScaffold search to 
+use the Sphinx search engine as well as the default. 
 
+It was created because of the need to search tables with a large number of records.
 
-Example
+Prerequisites
+========
+
+Sphinx (http://www.sphinxsearch.com/)
+Thinking Sphinx (http://freelancing-god.github.com/ts/en/)
+ActiveScaffold (http://activescaffold.com/)
+	
+Installation
+========
+	
+This assumes you already have a working Sphinx installation with the Thinking Sphinx gem 
+installed and running.  Your models should already have indexes configured. 
+
+  script/plugin install git://github.com/coryp/as_thinking_sphinx.git
+
+Configuration
 =======
 
-Example goes here.
+In the scaffold controllers in which you would like to use Sphinx, add the following line 
+in your active_scaffold config block:
 
+  config.search.engine = 'thinking_sphinx'
 
-Copyright (c) 2010 [name of plugin creator], released under the MIT license
+That's it!
+
+Copyright (c) 2010 Cory Patterson, released under the MIT license
