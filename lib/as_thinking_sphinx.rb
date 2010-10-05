@@ -34,11 +34,14 @@ ActiveScaffold::Actions::Search.class_eval do
 	def do_search
 		# Thinking Sphinx is configured, use it
 		if active_scaffold_config.search.engine == "thinking_sphinx"
-			@query = params[:search].to_s.strip rescue ''
+      # We need to parse the raw query_string here since the params hash has not yet been created.
+			@query = CGI.parse(request.query_string)['search'].to_s.strip rescue ''
+			
       unless @query.empty?
 				begin
 					# Run the search, returning only the ids
 				  sphinx_results = self.controller_name.classify.constantize.search(@query, :select => :id, :limit => 50)
+          # puts sphinx_results.collect { |x| x.id }				  
 				rescue NoMethodError
 					# There is no search method on the model, probably no indexes configured
 					# Fallback to default SQL search
@@ -50,12 +53,13 @@ ActiveScaffold::Actions::Search.class_eval do
 				search_conditions = { :id => sphinx_results.collect { |x| x.id } }
 				
 				# Add the ids to the conditions of the current search
-				self.active_scaffold_conditions = merge_conditions(self.active_scaffold_conditions, search_conditions)
-				
-				# Nil the search parameter so it isn't passed to the original search
-				params[:search] = nil
-				
-				do_original_search
+        self.active_scaffold_conditions = merge_conditions(self.active_scaffold_conditions, search_conditions)
+        
+        # Set the filtered flag based upon conditions
+        @filtered = !search_conditions.blank?
+
+        active_scaffold_config.list.user.page = nil
+
 			end		
 		else
 			# Fallback to default SQL search
