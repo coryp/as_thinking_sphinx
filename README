@@ -41,6 +41,11 @@ in your active_scaffold config block:
 
 That's it!
 
+Super-advanced configuration: If you want to specify the model you will be searching on (since by default it is derived from the current controller), add the following option:
+
+  config.search.model_name = 'product'
+
+
 Copyright (c) 2010 Cory Patterson, released under the MIT license
 Copyright (c) 2010 Hans Masing, released under the MIT license
 

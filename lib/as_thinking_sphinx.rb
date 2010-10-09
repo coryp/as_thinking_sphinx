@@ -22,8 +22,20 @@ ActiveScaffold::Config::Search.class_eval do
   def engine=(val)
     @engine = val
   end
-end
+  
+ 	# Add the 'model_name' configuration option
+  def model_name
+    unless @model_name
+      @model_name
+      self.model_name = nil
+    end
+    @model_name
+  end 
 
+  def model_name=(val)  
+    @model_name = val
+  end  
+end
 
 
 ActiveScaffold::Actions::Search.class_eval do
@@ -40,7 +52,11 @@ ActiveScaffold::Actions::Search.class_eval do
       unless @query.empty?
 				begin
 					# Run the search, returning only the ids
-				  sphinx_results = self.controller_name.classify.constantize.search(@query, :select => :id, :limit => 50)
+					active_scaffold_config.search.model_name.nil? ? @model_name = self.controller_name : @model_name = active_scaffold_config.search.model_name
+					
+					puts "\n\n\n\n\n\n\n\n\n#{@model_name}\n\n\n\n\n\n\n\n\n\n"
+					
+				  sphinx_results = @model_name.classify.constantize.search(@query, :select => :id, :limit => 50)
           # puts sphinx_results.collect { |x| x.id }				  
 				rescue NoMethodError
 					# There is no search method on the model, probably no indexes configured
