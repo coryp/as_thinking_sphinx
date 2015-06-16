@@ -1,12 +1,7 @@
 Modifications for this version
 ========
 
-This version has been modified to work with ActiveScaffold for Rails 2.3.  Cory's version did not work
-due to the params hash not being created in the application stack at the time that the before_filter was
-being called on the plugin.  Additionally, Cory's version did not clear out the query columns for the controller's
-Active Scaffold configuration, and therefore would not properly search on associations in the Thinking Sphinx
-configuration for the model being searched due to the full SQL search being performed on all columns for the
-search parameter.
+This version has been modified to work with ActiveScaffold for Rails 3.1
 
 ActiveScaffold Thinking Sphinx Adapter
 ========
@@ -46,6 +41,7 @@ Super-advanced configuration: If you want to specify the model you will be searc
   config.search.model_name = 'product'
 
 
+Copyright (c) 2012 Andrew Cates, released under the MIT license
 Copyright (c) 2010 Cory Patterson, released under the MIT license
 Copyright (c) 2010 Hans Masing, released under the MIT license
 
